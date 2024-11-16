@@ -27,18 +27,30 @@ class MissionControl(Node):
         self.publish_action = False
         self.publisher = self.create_publisher(String, 'mission_control_commands', 10)
 
-        self.timer = self.create_timer(1, self.timer_callback)
+        self.timer = self.create_timer(0.01, self.timer_callback)
 
     def readiness_communication_callback(self, msg):
         if msg.status == "Active":
             self.active_dict[msg.sender] = True
         else:
             self.active_dict[msg.sender] = False
-        self.active_dict_delay[msg.sender] = 0
+        self.active_dict_delay[msg.sender] = time.time()
 
     def timer_callback(self):
-        for i in self.active_dict:
-            self.get_logger().info(f"{i}: {self.active_dict[i]}")
+        publish_action = True
+        for i in self.active_dict.values():
+            if not i:
+                publish_action = False
+        for i in self.active_dict_delay.values():
+            if time.time() - i > 0.2: # twice the config_time_step
+                publish_action = False
+
+        self.publish_action = publish_action
+
+        if self.publish_action:
+            # self.get_logger().info("Ready to publish")
+            pass
+
 
 def main(args=None):
     """
