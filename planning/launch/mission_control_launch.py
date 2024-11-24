@@ -9,7 +9,7 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 def generate_launch_description():
     gait_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([os.path.join(
-            get_package_share_directory('gait_package'), 'launch', 'launch.py')])
+            get_package_share_directory('brain_package'), 'launch', 'launch.py')])
     )
     mission_control = Node(package="planning",
                     executable="mission_control")
